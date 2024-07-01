@@ -1,3 +1,12 @@
+import AWS from 'aws-sdk';
+import mockS3 from 'aws-sdk-mock';
+
+// Initialize the mock S3 service
+mockS3.setSDKInstance(AWS);
+mockS3.mock('S3', 'putObject', (params, callback) => {
+  callback(null, { ETag: '"mock-etag"' });
+});
+
 /**
  * storage.js
  * Utility functions for managing detection counts using IndexedDB.
