@@ -1,3 +1,5 @@
+import AWS from 'aws-sdk';
+
 const initDB = async () => {
   if (!window.indexedDB) {
     console.error("Your browser doesn't support a stable version of IndexedDB.");
