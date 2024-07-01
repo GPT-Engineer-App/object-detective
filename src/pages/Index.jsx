@@ -63,12 +63,10 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen relative">
+    <div className="flex flex-col items-center justify-center h-screen">
       <h1 className="text-3xl font-bold mb-4">Real-time Object Detection</h1>
-      <div className="relative">
-        <video ref={videoRef} className="border rounded mb-4" autoPlay playsInline muted width="640" height="480" />
-        <canvas ref={canvasRef} className="absolute top-0 left-0" />
-      </div>
+      <video ref={videoRef} className="border rounded mb-4" autoPlay playsInline muted width="640" height="480" />
+      <canvas ref={canvasRef} className="border rounded" />
     </div>
   );
 };
