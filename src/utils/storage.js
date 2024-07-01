@@ -1,5 +1,3 @@
-
-
 /**
  * storage.js
  * Utility functions for managing detection counts using IndexedDB.
