@@ -1,3 +1,4 @@
+import AWSMock from 'aws-sdk-mock';
 import AWS from 'aws-sdk';
 
 const initDB = async () => {
