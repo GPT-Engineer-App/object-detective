@@ -1,6 +1,12 @@
 /**
  * LiveFeed component for real-time object detection and tracking.
  * Utilizes the user's webcam to detect and track objects using YOLOv5.
+ * 
+ * TODO:
+ * - Collect new data during app usage.
+ * - Retrain the model with new data.
+ * - Update the deployed model with the retrained version.
+ * - Implement additional features or optimizations as needed.
  */
 
 import React, { useEffect, useRef, useState } from 'react';
