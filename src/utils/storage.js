@@ -3,6 +3,12 @@
 /**
  * storage.js
  * Utility functions for managing detection counts using IndexedDB.
+ * 
+ * TODO:
+ * - Collect new data during app usage.
+ * - Retrain the model with new data.
+ * - Update the deployed model with the retrained version.
+ * - Implement additional features or optimizations as needed.
  */
 
 /**

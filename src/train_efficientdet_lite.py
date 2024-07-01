@@ -1,6 +1,12 @@
 """
 train_efficientdet_lite.py
 Script for training an EfficientDet Lite model using TensorFlow and Keras.
+
+TODO:
+- Collect new data during app usage.
+- Retrain the model with new data.
+- Update the deployed model with the retrained version.
+- Implement additional features or optimizations as needed.
 """
 
 import os
