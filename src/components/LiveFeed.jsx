@@ -1,3 +1,8 @@
+/**
+ * LiveFeed component for real-time object detection and tracking.
+ * Utilizes the user's webcam to detect and track objects using YOLOv5.
+ */
+
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
 import { getCounts, resetCounts } from '../utils/storage';

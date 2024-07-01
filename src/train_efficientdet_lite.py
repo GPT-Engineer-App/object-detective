@@ -1,3 +1,8 @@
+"""
+train_efficientdet_lite.py
+Script for training an EfficientDet Lite model using TensorFlow and Keras.
+"""
+
 import os
 import tensorflow as tf
 from tensorflow import keras

@@ -1,7 +1,18 @@
+/**
+ * detection.js
+ * Utility functions for object detection and tracking using YOLOv5.
+ */
+
 import * as tf from '@tensorflow/tfjs';
 import { YOLOv5 } from 'yolov5';
 import { updateCounts } from './storage';
 
+/**
+ * Detects and tracks objects in the video stream.
+ * @param {HTMLVideoElement} video - The video element.
+ * @param {HTMLCanvasElement} canvas - The canvas element for drawing detections.
+ * @param {Function} setCounts - Function to update the detection counts.
+ */
 const detectAndTrackObjects = async (video, canvas, setCounts) => {
   const yolo = new YOLOv5();
 
