@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import * as tf from '@tensorflow/tfjs-node';
-import { shuffle } from 'lodash';
+import { split } from 'lodash';
 
 const IMAGE_SIZE = 320;
 const TRAIN_RATIO = 0.8;
@@ -20,7 +20,7 @@ const preprocessDataset = async (datasetDir, outputDir) => {
   const files = fs.readdirSync(datasetDir);
   const totalFiles = files.length;
   const trainCount = Math.floor(totalFiles * TRAIN_RATIO);
-  const shuffledFiles = shuffle(files);
+  const shuffledFiles = _.shuffle(files);
 
   const trainFiles = shuffledFiles.slice(0, trainCount);
   const valFiles = shuffledFiles.slice(trainCount);

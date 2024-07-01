@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import efficientdet.keras as efficientdet_keras
 
+# Constants
 IMAGE_SIZE = 320
 BATCH_SIZE = 32
 EPOCHS = 50
@@ -14,6 +15,7 @@ TRAIN_DIR = 'path/to/preprocessed/train'
 VAL_DIR = 'path/to/preprocessed/val'
 MODEL_DIR = 'path/to/save/model'
 
+# Load Dataset
 train_datagen = ImageDataGenerator(
     rescale=1./255,
     rotation_range=20,
@@ -41,6 +43,7 @@ val_generator = val_datagen.flow_from_directory(
     class_mode='categorical'
 )
 
+# Define Model
 model = efficientdet_keras.EfficientDetLiteB0(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), num_classes=train_generator.num_classes)
 model.compile(
     optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
@@ -48,9 +51,11 @@ model.compile(
     metrics=['accuracy']
 )
 
+# Callbacks
 early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 model_checkpoint = ModelCheckpoint(os.path.join(MODEL_DIR, 'efficientdet_lite_best.h5'), save_best_only=True, monitor='val_loss')
 
+# Train Model
 history = model.fit(
     train_generator,
     epochs=EPOCHS,
@@ -58,4 +63,5 @@ history = model.fit(
     callbacks=[early_stopping, model_checkpoint]
 )
 
+# Save Final Model
 model.save(os.path.join(MODEL_DIR, 'efficientdet_lite_final.h5'))
