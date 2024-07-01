@@ -1,3 +1,8 @@
+/**
+ * preprocessDataset.js
+ * Utility script for preprocessing image datasets for training.
+ */
+
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
@@ -7,6 +12,11 @@ import { split } from 'lodash';
 const IMAGE_SIZE = 320;
 const TRAIN_RATIO = 0.8;
 
+/**
+ * Preprocesses a single image.
+ * @param {string} imagePath - Path to the image file.
+ * @returns {tf.Tensor} - Preprocessed image tensor.
+ */
 const preprocessImage = async (imagePath) => {
   const image = await sharp(imagePath)
     .resize(IMAGE_SIZE, IMAGE_SIZE)
@@ -16,6 +26,11 @@ const preprocessImage = async (imagePath) => {
   return normalized;
 };
 
+/**
+ * Preprocesses the entire dataset and splits it into training and validation sets.
+ * @param {string} datasetDir - Directory containing the dataset images.
+ * @param {string} outputDir - Directory to save the preprocessed images.
+ */
 const preprocessDataset = async (datasetDir, outputDir) => {
   const files = fs.readdirSync(datasetDir);
   const totalFiles = files.length;

@@ -1,8 +1,14 @@
 
 
-// Mock implementation for AWS-related functionality
+/**
+ * storage.js
+ * Utility functions for managing detection counts using IndexedDB.
+ */
 
-    const initDB = async () => {
+/**
+ * Initializes the IndexedDB database for storing detection counts.
+ */
+const initDB = async () => {
   if (!window.indexedDB) {
     console.error("Your browser doesn't support a stable version of IndexedDB.");
     return;
@@ -22,6 +28,11 @@
   };
 };
 
+/**
+ * Updates the detection counts in the IndexedDB.
+ * @param {Array} predictions - Array of detection predictions.
+ * @param {Function} setCounts - Function to update the detection counts.
+ */
 const updateCounts = async (predictions, setCounts) => {
   const request = indexedDB.open('countsDB', 1);
 
@@ -60,6 +71,10 @@ const updateCounts = async (predictions, setCounts) => {
   };
 };
 
+/**
+ * Retrieves the detection counts from the IndexedDB.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing detection counts.
+ */
 const getCounts = () => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('countsDB', 1);
@@ -88,6 +103,9 @@ const getCounts = () => {
   });
 };
 
+/**
+ * Resets the detection counts in the IndexedDB.
+ */
 const resetCounts = () => {
   const request = indexedDB.open('countsDB', 1);
 
