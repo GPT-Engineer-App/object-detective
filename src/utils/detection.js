@@ -2,6 +2,11 @@ import * as tf from '@tensorflow/tfjs';
 import { YOLOv5 } from 'yolov5';
 import { updateCounts } from './storage';
 
+// Ensure setTimeout is defined in the environment
+if (typeof setTimeout === 'undefined') {
+  throw new Error('setTimeout has not been defined');
+}
+
 const detectAndTrackObjects = async (video, canvas, setCounts) => {
   const yolo = new YOLOv5();
 
