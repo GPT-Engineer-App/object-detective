@@ -1,54 +1,102 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-
-const dbPromise = open({
-  filename: './counts.db',
-  driver: sqlite3.Database
-});
-
 const initDB = async () => {
-  const db = await dbPromise;
-  await db.exec('CREATE TABLE IF NOT EXISTS counts (id INTEGER PRIMARY KEY, type TEXT, count INTEGER)');
+  if (!window.indexedDB) {
+    console.error("Your browser doesn't support a stable version of IndexedDB.");
+    return;
+  }
+
+  const request = indexedDB.open('countsDB', 1);
+
+  request.onupgradeneeded = (event) => {
+    const db = event.target.result;
+    if (!db.objectStoreNames.contains('counts')) {
+      db.createObjectStore('counts', { keyPath: 'type' });
+    }
+  };
+
+  request.onerror = (event) => {
+    console.error('Database error:', event.target.errorCode);
+  };
 };
 
 const updateCounts = async (predictions, setCounts) => {
-  const db = await dbPromise;
-  const counts = {};
+  const request = indexedDB.open('countsDB', 1);
 
-  for (const prediction of predictions) {
-    const type = prediction.class;
-    if (!counts[type]) {
-      counts[type] = 0;
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+    const transaction = db.transaction(['counts'], 'readwrite');
+    const store = transaction.objectStore('counts');
+
+    const counts = {};
+
+    predictions.forEach(prediction => {
+      const type = prediction.class;
+      if (!counts[type]) {
+        counts[type] = 0;
+      }
+      counts[type] += 1;
+    });
+
+    for (const [type, count] of Object.entries(counts)) {
+      const getRequest = store.get(type);
+      getRequest.onsuccess = () => {
+        const data = getRequest.result || { type, count: 0 };
+        data.count += count;
+        store.put(data);
+      };
     }
-    counts[type] += 1;
-  }
 
-  for (const [type, count] of Object.entries(counts)) {
-    await db.run('INSERT INTO counts (type, count) VALUES (?, ?) ON CONFLICT(type) DO UPDATE SET count = count + ?', [type, count, count]);
-  }
+    transaction.oncomplete = async () => {
+      const allCounts = await getCounts();
+      setCounts(allCounts);
+    };
+  };
 
-  const rows = await db.all('SELECT type, SUM(count) as count FROM counts GROUP BY type');
-  const newCounts = {};
-  rows.forEach(row => {
-    newCounts[row.type] = row.count;
-  });
-
-  setCounts(newCounts);
+  request.onerror = (event) => {
+    console.error('Database error:', event.target.errorCode);
+  };
 };
 
-const getCounts = async () => {
-  const db = await dbPromise;
-  const rows = await db.all('SELECT type, SUM(count) as count FROM counts GROUP BY type');
-  const counts = {};
-  rows.forEach(row => {
-    counts[row.type] = row.count;
+const getCounts = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('countsDB', 1);
+
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction(['counts'], 'readonly');
+      const store = transaction.objectStore('counts');
+
+      const allCounts = {};
+      store.openCursor().onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (cursor) {
+          allCounts[cursor.key] = cursor.value.count;
+          cursor.continue();
+        } else {
+          resolve(allCounts);
+        }
+      };
+    };
+
+    request.onerror = (event) => {
+      console.error('Database error:', event.target.errorCode);
+      reject(event.target.errorCode);
+    };
   });
-  return counts;
 };
 
-const resetCounts = async () => {
-  const db = await dbPromise;
-  await db.exec('DELETE FROM counts');
+const resetCounts = () => {
+  const request = indexedDB.open('countsDB', 1);
+
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+    const transaction = db.transaction(['counts'], 'readwrite');
+    const store = transaction.objectStore('counts');
+    store.clear();
+  };
+
+  request.onerror = (event) => {
+    console.error('Database error:', event.target.errorCode);
+  };
 };
 
 initDB();
