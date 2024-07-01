@@ -2,7 +2,39 @@
 
 // Mock implementation for AWS-related functionality
 
-    const initDB = async () => {
+    const mockS3 = {
+  data: {},
+
+  putObject: async (params) => {
+    const { Bucket, Key, Body } = params;
+    if (!mockS3.data[Bucket]) {
+      mockS3.data[Bucket] = {};
+    }
+    mockS3.data[Bucket][Key] = Body;
+    return { ETag: `"${Date.now()}"` };
+  },
+
+  getObject: async (params) => {
+    const { Bucket, Key } = params;
+    if (mockS3.data[Bucket] && mockS3.data[Bucket][Key]) {
+      return { Body: mockS3.data[Bucket][Key] };
+    } else {
+      throw new Error('NoSuchKey');
+    }
+  },
+
+  deleteObject: async (params) => {
+    const { Bucket, Key } = params;
+    if (mockS3.data[Bucket] && mockS3.data[Bucket][Key]) {
+      delete mockS3.data[Bucket][Key];
+      return {};
+    } else {
+      throw new Error('NoSuchKey');
+    }
+  },
+};
+
+const initDB = async () => {
   if (!window.indexedDB) {
     console.error("Your browser doesn't support a stable version of IndexedDB.");
     return;
@@ -105,4 +137,4 @@ const resetCounts = () => {
 
 initDB();
 
-export { updateCounts, getCounts, resetCounts };
+export { updateCounts, getCounts, resetCounts, mockS3 };
