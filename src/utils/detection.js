@@ -2,9 +2,19 @@ import * as tf from '@tensorflow/tfjs';
 import { YOLOv5 } from 'yolov5';
 import { updateCounts } from './storage';
 
-// Ensure setTimeout is defined in the environment
+// Polyfill for setTimeout if not defined
 if (typeof setTimeout === 'undefined') {
-  throw new Error('setTimeout has not been defined');
+  global.setTimeout = (fn, ms) => {
+    const start = Date.now();
+    const check = () => {
+      if (Date.now() - start >= ms) {
+        fn();
+      } else {
+        global.requestAnimationFrame(check);
+      }
+    };
+    global.requestAnimationFrame(check);
+  };
 }
 
 const detectAndTrackObjects = async (video, canvas, setCounts) => {
