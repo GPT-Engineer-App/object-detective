@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { exportCountsToCSV } from '../utils/storage';
 import { fetchCountHistory } from '../utils/api';
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "../components/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table"
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
 import { AlertCircle } from "lucide-react"
 
 const History = () => {
