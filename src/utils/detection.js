@@ -1,29 +1,17 @@
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import * as cocossd from '@tensorflow-models/coco-ssd';
-import { updateCounts } from './storage';
-import { fetchModelUpdates } from './api';
 
 let model;
 
 const loadModel = async () => {
   if (!model) {
-    try {
-      const modelUpdate = await fetchModelUpdates();
-      if (modelUpdate && modelUpdate.url) {
-        model = await tf.loadGraphModel(modelUpdate.url);
-      } else {
-        model = await cocossd.load();
-      }
-    } catch (error) {
-      console.error('Error loading model update:', error);
-      model = await cocossd.load();
-    }
+    model = await cocossd.load();
   }
   return model;
 };
 
-const detectAndTrackObjects = async (video, canvas, setCounts) => {
+const detectAndTrackObjects = async (video, canvas, updateCounts) => {
   await tf.setBackend('webgl');
   const cocoModel = await loadModel();
 
@@ -40,26 +28,22 @@ const detectAndTrackObjects = async (video, canvas, setCounts) => {
       const [x, y, width, height] = prediction.bbox;
       const className = prediction.class;
 
-      // Draw bounding box
       ctx.strokeStyle = 'green';
       ctx.lineWidth = 2;
       ctx.strokeRect(x, y, width, height);
 
-      // Draw label
       ctx.fillStyle = 'green';
       ctx.font = '16px Arial';
       ctx.fillText(`${className} (${Math.round(prediction.score * 100)}%)`, x, y > 20 ? y - 5 : 15);
 
-      // Update counts
       if (!newCounts[className]) {
         newCounts[className] = 0;
       }
       newCounts[className]++;
     });
 
-    // Update object counts
     objectCounts = { ...objectCounts, ...newCounts };
-    updateCounts(objectCounts, setCounts);
+    updateCounts(objectCounts);
 
     requestAnimationFrame(processFrame);
   };

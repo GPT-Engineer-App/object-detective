@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
-import { getCounts, resetCounts } from '../utils/storage';
 import { sendDetectionData } from '../utils/api';
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
@@ -32,7 +31,6 @@ const LiveFeed = () => {
 
     startDetection();
     return () => {
-      // Clean up video stream when component unmounts
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
@@ -49,7 +47,6 @@ const LiveFeed = () => {
   };
 
   const handleReset = () => {
-    resetCounts();
     setCounts({});
   };
 
