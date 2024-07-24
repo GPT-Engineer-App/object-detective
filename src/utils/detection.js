@@ -2,23 +2,13 @@ import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import * as cocossd from '@tensorflow-models/coco-ssd';
 import { updateCounts } from './storage';
-import { fetchModelUpdates, sendDetectionData } from './api';
+import { sendDetectionData } from './api';
 
 let model;
 
 const loadModel = async () => {
   if (!model) {
-    try {
-      const modelUpdate = await fetchModelUpdates();
-      if (modelUpdate && modelUpdate.url) {
-        model = await tf.loadGraphModel(modelUpdate.url);
-      } else {
-        model = await cocossd.load();
-      }
-    } catch (error) {
-      console.error('Error loading model update:', error);
-      model = await cocossd.load();
-    }
+    model = await cocossd.load();
   }
   return model;
 };
@@ -59,7 +49,8 @@ const detectAndTrackObjects = async (video, canvas, setCounts) => {
 
     // Update object counts
     objectCounts = { ...objectCounts, ...newCounts };
-    await updateCounts(objectCounts, setCounts);
+    await updateCounts(objectCounts);
+    setCounts(objectCounts);
 
     // Send detection data to backend
     try {
