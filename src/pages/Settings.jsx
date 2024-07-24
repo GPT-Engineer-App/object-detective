@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Textarea } from "../components/ui/textarea"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Settings = () => {
   const [endpoints, setEndpoints] = useState({
@@ -27,16 +26,11 @@ const Settings = () => {
 
   const testApiCall = async (endpoint) => {
     try {
-      const response = await fetch(endpoints[endpoint], {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
+      const response = await fetch(endpoints[endpoint]);
+      const data = await response.text();
       setApiResults(prev => ({
         ...prev,
-        [endpoint]: JSON.stringify(data, null, 2)
+        [endpoint]: data
       }));
     } catch (error) {
       setApiResults(prev => ({
@@ -69,11 +63,9 @@ const Settings = () => {
                 {apiResults[endpoint] && (
                   <div className="mt-4">
                     <Label>API Result:</Label>
-                    <Textarea
-                      value={apiResults[endpoint]}
-                      readOnly
-                      className="mt-1 h-32"
-                    />
+                    <div className="mt-1 p-2 bg-gray-100 rounded">
+                      {apiResults[endpoint]}
+                    </div>
                   </div>
                 )}
               </div>
