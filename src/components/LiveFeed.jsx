@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
+import { saveCounts, getCounts } from '../utils/api';
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 
@@ -7,6 +8,19 @@ const LiveFeed = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [counts, setCounts] = useState({});
+
+  useEffect(() => {
+    const fetchInitialCounts = async () => {
+      try {
+        const initialCounts = await getCounts();
+        setCounts(initialCounts);
+      } catch (error) {
+        console.error('Failed to fetch initial counts:', error);
+      }
+    };
+
+    fetchInitialCounts();
+  }, []);
 
   useEffect(() => {
     const startDetection = async () => {
@@ -36,7 +50,7 @@ const LiveFeed = () => {
     };
   }, []);
 
-  const handleDetectionUpdate = (newCounts) => {
+  const handleDetectionUpdate = async (newCounts) => {
     setCounts(prevCounts => {
       const updatedCounts = { ...prevCounts };
       Object.entries(newCounts).forEach(([key, value]) => {
@@ -44,10 +58,21 @@ const LiveFeed = () => {
       });
       return updatedCounts;
     });
+
+    try {
+      await saveCounts(newCounts);
+    } catch (error) {
+      console.error('Failed to save counts:', error);
+    }
   };
 
-  const handleReset = () => {
-    setCounts({});
+  const handleReset = async () => {
+    try {
+      await saveCounts({});
+      setCounts({});
+    } catch (error) {
+      console.error('Failed to reset counts:', error);
+    }
   };
 
   return (

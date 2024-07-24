@@ -1,52 +1,37 @@
-import axios from 'axios';
+const API_BASE_URL = 'https://backengine-m6trgnlp.fly.dev';
 
-const API_BASE_URL = 'https://api.enginelabs.ai'; // Replace with the actual API base URL
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-export const sendDetectionData = async (detectionData) => {
+export const saveCounts = async (counts) => {
   try {
-    const response = await api.post('/detection-data', detectionData);
-    return response.data;
+    const response = await fetch(`${API_BASE_URL}/counts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(counts),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save counts');
+    }
+
+    return await response.json();
   } catch (error) {
-    console.error('Error sending detection data:', error);
+    console.error('Error saving counts:', error);
     throw error;
   }
 };
 
-export const fetchModelUpdates = async () => {
+export const getCounts = async () => {
   try {
-    const response = await api.get('/model-updates');
-    return response.data;
+    const response = await fetch(`${API_BASE_URL}/counts`);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch counts');
+    }
+
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching model updates:', error);
+    console.error('Error fetching counts:', error);
     throw error;
   }
 };
-
-export const fetchSettings = async () => {
-  try {
-    const response = await api.get('/settings');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching settings:', error);
-    throw error;
-  }
-};
-
-export const updateSettings = async (settings) => {
-  try {
-    const response = await api.put('/settings', settings);
-    return response.data;
-  } catch (error) {
-    console.error('Error updating settings:', error);
-    throw error;
-  }
-};
-
-export default api;
