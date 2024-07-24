@@ -1,15 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { detectAndTrackObjects } from '../utils/detection';
 import { getCounts, resetCounts } from '../utils/storage';
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const LiveFeed = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [counts, setCounts] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
     const startDetection = async () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -36,7 +44,7 @@ const LiveFeed = () => {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [navigate]);
 
   const handleReset = () => {
     resetCounts();

@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getCountHistory, exportCountsToCSV } from '../utils/storage';
-import { Button } from "../components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table"
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const History = () => {
   const [history, setHistory] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
     const fetchHistory = async () => {
       const data = await getCountHistory();
       setHistory(data);
     };
     fetchHistory();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="container mx-auto p-4">
