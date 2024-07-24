@@ -14,8 +14,7 @@ const updateCounts = async (newCounts, setCounts) => {
     }
   });
 
-  const allCounts = await getCounts();
-  setCounts(allCounts);
+  setCounts(newCounts);
 };
 
 const getCounts = async () => {
