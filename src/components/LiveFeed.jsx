@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
 import { getCounts, resetCounts } from '../utils/storage';
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const LiveFeed = () => {
   const videoRef = useRef(null);
@@ -35,7 +35,6 @@ const LiveFeed = () => {
 
     startDetection();
     return () => {
-      // Clean up video stream when component unmounts
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
