@@ -1,67 +1,72 @@
 import React, { useState } from 'react';
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Switch } from "../components/ui/switch"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Settings = () => {
-  const [settings, setSettings] = useState({
-    confidenceThreshold: 0.5,
-    useGPU: true,
-    enableMultiThreading: true,
+  const [endpoints, setEndpoints] = useState({
+    endpoint1: '',
+    endpoint2: '',
+    endpoint3: '',
   });
+  const [apiResults, setApiResults] = useState({});
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setSettings(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEndpoints(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save the settings to some persistent storage
-    console.log('Saving settings:', settings);
-    // Implement actual saving logic
+  const testApiCall = async (endpointKey) => {
+    try {
+      const response = await fetch(endpoints[endpointKey]);
+      const data = await response.json();
+      setApiResults(prev => ({ ...prev, [endpointKey]: JSON.stringify(data, null, 2) }));
+    } catch (error) {
+      setApiResults(prev => ({ ...prev, [endpointKey]: `Error: ${error.message}` }));
+    }
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Settings</h1>
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="confidenceThreshold">Confidence Threshold</Label>
-          <Input
-            id="confidenceThreshold"
-            name="confidenceThreshold"
-            type="number"
-            min="0"
-            max="1"
-            step="0.1"
-            value={settings.confidenceThreshold}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="useGPU"
-            name="useGPU"
-            checked={settings.useGPU}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, useGPU: checked }))}
-          />
-          <Label htmlFor="useGPU">Use GPU Acceleration</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="enableMultiThreading"
-            name="enableMultiThreading"
-            checked={settings.enableMultiThreading}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, enableMultiThreading: checked }))}
-          />
-          <Label htmlFor="enableMultiThreading">Enable Multi-threading</Label>
-        </div>
-        <Button onClick={handleSave}>Save Settings</Button>
-      </div>
+      <h1 className="text-3xl font-bold mb-4">Enginelabs.ai Settings</h1>
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>API Endpoints Configuration</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {Object.keys(endpoints).map((key) => (
+            <div key={key} className="mb-4">
+              <label htmlFor={key} className="block text-sm font-medium text-gray-700 mb-1">
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </label>
+              <Input
+                type="text"
+                id={key}
+                name={key}
+                value={endpoints[key]}
+                onChange={handleInputChange}
+                placeholder={`Enter ${key} URL`}
+              />
+              <Button onClick={() => testApiCall(key)} className="mt-2">
+                Test {key}
+              </Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>API Call Results</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {Object.entries(apiResults).map(([key, value]) => (
+            <div key={key} className="mb-4">
+              <h3 className="text-lg font-semibold mb-2">{key} Result:</h3>
+              <pre className="bg-gray-100 p-2 rounded">{value}</pre>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 };
