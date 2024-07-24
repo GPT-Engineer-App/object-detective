@@ -13,7 +13,7 @@ const LiveFeed = () => {
     const startDetection = async () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      if (navigator.mediaDevices.getUserMedia) {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           video.srcObject = stream;
