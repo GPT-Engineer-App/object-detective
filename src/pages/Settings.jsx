@@ -59,9 +59,9 @@ const Settings = () => {
                   onChange={handleEndpointChange}
                   placeholder={`Enter ${endpoint} URL`}
                 />
-                <Button onClick={() => testApiCall(endpoint)} className="mt-2">Test API Call</Button>
+                <Button onClick={() => testApiCall(endpoint)}>Test API Call</Button>
                 {apiResults[endpoint] && (
-                  <div className="mt-4">
+                  <div className="mt-2">
                     <Label>API Result:</Label>
                     <div className="mt-1 p-2 bg-gray-100 rounded">
                       {apiResults[endpoint]}
