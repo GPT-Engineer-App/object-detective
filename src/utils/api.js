@@ -49,4 +49,14 @@ export const updateSettings = async (settings) => {
   }
 };
 
+export const fetchCountHistory = async () => {
+  try {
+    const response = await api.get('/count-history');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching count history:', error);
+    throw error;
+  }
+};
+
 export default api;

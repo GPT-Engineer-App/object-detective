@@ -1,4 +1,5 @@
 import Dexie from 'dexie';
+import { sendDetectionData } from './api';
 
 const db = new Dexie('ObjectDetectionDB');
 db.version(1).stores({
@@ -15,6 +16,13 @@ const updateCounts = async (newCounts, setCounts) => {
   });
 
   setCounts(newCounts);
+
+  // Send updated counts to backend
+  try {
+    await sendDetectionData(newCounts);
+  } catch (error) {
+    console.error('Error sending detection data to backend:', error);
+  }
 };
 
 const getCounts = async () => {
@@ -30,6 +38,12 @@ const getCounts = async () => {
 
 const resetCounts = async () => {
   await db.counts.clear();
+  // Send reset signal to backend
+  try {
+    await sendDetectionData({});
+  } catch (error) {
+    console.error('Error sending reset signal to backend:', error);
+  }
 };
 
 const getCountHistory = async () => {

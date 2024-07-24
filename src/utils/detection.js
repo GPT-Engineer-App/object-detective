@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import * as cocossd from '@tensorflow-models/coco-ssd';
 import { updateCounts } from './storage';
-import { fetchModelUpdates } from './api';
+import { fetchModelUpdates, sendDetectionData } from './api';
 
 let model;
 
@@ -59,7 +59,14 @@ const detectAndTrackObjects = async (video, canvas, setCounts) => {
 
     // Update object counts
     objectCounts = { ...objectCounts, ...newCounts };
-    updateCounts(objectCounts, setCounts);
+    await updateCounts(objectCounts, setCounts);
+
+    // Send detection data to backend
+    try {
+      await sendDetectionData(objectCounts);
+    } catch (error) {
+      console.error('Error sending detection data to backend:', error);
+    }
 
     requestAnimationFrame(processFrame);
   };
