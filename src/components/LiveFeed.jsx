@@ -1,48 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { detectAndTrackObjects } from '../utils/detection';
-import { saveCounts, getCounts } from '../utils/api';
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 
 const LiveFeed = () => {
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
-    const fetchInitialCounts = async () => {
-      try {
-        const initialCounts = await getCounts();
-        setCounts(initialCounts);
-      } catch (error) {
-        console.error('Failed to fetch initial counts:', error);
-      }
-    };
-
-    fetchInitialCounts();
-  }, []);
-
-  useEffect(() => {
-    const startDetection = async () => {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
+    const startCamera = async () => {
       if (navigator.mediaDevices.getUserMedia) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          video.srcObject = stream;
-          video.onloadedmetadata = () => {
-            video.play();
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            detectAndTrackObjects(video, canvas, handleDetectionUpdate);
-          };
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
         } catch (err) {
           console.error("Error accessing the camera: ", err);
         }
       }
     };
 
-    startDetection();
+    startCamera();
+
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
@@ -50,54 +27,28 @@ const LiveFeed = () => {
     };
   }, []);
 
-  const handleDetectionUpdate = async (newCounts) => {
-    setCounts(prevCounts => {
-      const updatedCounts = { ...prevCounts };
-      Object.entries(newCounts).forEach(([key, value]) => {
-        updatedCounts[key] = (updatedCounts[key] || 0) + value;
-      });
-      return updatedCounts;
-    });
-
-    try {
-      await saveCounts(newCounts);
-    } catch (error) {
-      console.error('Failed to save counts:', error);
-    }
-  };
-
-  const handleReset = async () => {
-    try {
-      await saveCounts({});
-      setCounts({});
-    } catch (error) {
-      console.error('Failed to reset counts:', error);
-    }
+  const handleDetection = () => {
+    // Simulating object detection
+    const detectedObject = ['person', 'car', 'dog'][Math.floor(Math.random() * 3)];
+    setCounts(prevCounts => ({
+      ...prevCounts,
+      [detectedObject]: (prevCounts[detectedObject] || 0) + 1
+    }));
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-3xl font-bold mb-4">Real-time Object Detection and Tracking</h1>
-      <div className="relative mb-4">
-        <video ref={videoRef} className="border rounded" autoPlay playsInline muted />
-        <canvas ref={canvasRef} className="absolute top-0 left-0" />
+    <div>
+      <h1>Real-time Object Detection</h1>
+      <video ref={videoRef} autoPlay playsInline muted />
+      <button onClick={handleDetection}>Simulate Detection</button>
+      <div>
+        <h2>Detected Objects:</h2>
+        <ul>
+          {Object.entries(counts).map(([key, value]) => (
+            <li key={key}>{key}: {value}</li>
+          ))}
+        </ul>
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Detected Objects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {Object.entries(counts).map(([key, value]) => (
-              <li key={key} className="flex justify-between">
-                <span>{key}:</span>
-                <span>{value}</span>
-              </li>
-            ))}
-          </ul>
-          <Button onClick={handleReset} className="mt-4 w-full">Reset Counts</Button>
-        </CardContent>
-      </Card>
     </div>
   );
 };
