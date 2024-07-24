@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
 import { getCounts, resetCounts } from '../utils/storage';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const LiveFeed = () => {
   const videoRef = useRef(null);
@@ -49,22 +47,18 @@ const LiveFeed = () => {
         <video ref={videoRef} className="w-full h-full object-cover rounded-lg" autoPlay playsInline muted />
         <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Detected Objects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {Object.entries(counts).map(([key, value]) => (
-              <li key={key} className="flex justify-between">
-                <span>{key}:</span>
-                <span>{value}</span>
-              </li>
-            ))}
-          </ul>
-          <Button onClick={handleReset} className="mt-4 w-full">Reset Counts</Button>
-        </CardContent>
-      </Card>
+      <div className="bg-white shadow rounded-lg p-4">
+        <h2 className="text-xl font-semibold mb-2">Detected Objects</h2>
+        <ul className="space-y-2">
+          {Object.entries(counts).map(([key, value]) => (
+            <li key={key} className="flex justify-between">
+              <span>{key}:</span>
+              <span>{value}</span>
+            </li>
+          ))}
+        </ul>
+        <button onClick={handleReset} className="mt-4 w-full bg-red-500 text-white p-2 rounded">Reset Counts</button>
+      </div>
     </div>
   );
 };
