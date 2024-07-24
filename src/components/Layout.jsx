@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
 
 const navItems = [
   { path: '/', label: 'Home' },
@@ -14,17 +13,24 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b">
-        <nav className="container mx-auto py-4 flex flex-wrap justify-center md:justify-start space-x-4">
-          {navItems.map((item) => (
-            <Button
-              key={item.path}
-              variant={location.pathname === item.path ? "default" : "ghost"}
-              asChild
-            >
-              <Link to={item.path}>{item.label}</Link>
-            </Button>
-          ))}
+      <header className="bg-gray-800 text-white">
+        <nav className="container mx-auto py-4">
+          <ul className="flex flex-wrap justify-center md:justify-start space-x-4">
+            {navItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className={`px-3 py-2 rounded-md ${
+                    location.pathname === item.path
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
       </header>
 
@@ -32,7 +38,7 @@ const Layout = ({ children }) => {
         {children}
       </main>
 
-      <footer className="border-t">
+      <footer className="bg-gray-800 text-white">
         <div className="container mx-auto py-4 text-center">
           © 2023 Object Detection App
         </div>
