@@ -1,51 +1,43 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const LiveFeed = () => {
-  const videoRef = useRef(null);
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
-    const startCamera = async () => {
-      if (navigator.mediaDevices.getUserMedia) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (err) {
-          console.error("Error accessing the camera: ", err);
-        }
-      }
-    };
-
-    startCamera();
-
-    return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-      }
-    };
+    const savedCounts = localStorage.getItem('objectCounts');
+    if (savedCounts) {
+      setCounts(JSON.parse(savedCounts));
+    }
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem('objectCounts', JSON.stringify(counts));
+  }, [counts]);
+
   const handleDetection = () => {
-    // Simulating object detection
-    const detectedObject = ['person', 'car', 'dog'][Math.floor(Math.random() * 3)];
+    const objects = ['person', 'car', 'dog', 'cat', 'bird'];
+    const detectedObject = objects[Math.floor(Math.random() * objects.length)];
+    
     setCounts(prevCounts => ({
       ...prevCounts,
       [detectedObject]: (prevCounts[detectedObject] || 0) + 1
     }));
   };
 
+  const resetCounts = () => {
+    setCounts({});
+  };
+
   return (
     <div>
-      <h1>Real-time Object Detection</h1>
-      <video ref={videoRef} autoPlay playsInline muted />
+      <h1>Object Detection Simulator</h1>
       <button onClick={handleDetection}>Simulate Detection</button>
+      <button onClick={resetCounts}>Reset Counts</button>
       <div>
         <h2>Detected Objects:</h2>
         <ul>
-          {Object.entries(counts).map(([key, value]) => (
-            <li key={key}>{key}: {value}</li>
+          {Object.entries(counts).map(([object, count]) => (
+            <li key={object}>{object}: {count}</li>
           ))}
         </ul>
       </div>
