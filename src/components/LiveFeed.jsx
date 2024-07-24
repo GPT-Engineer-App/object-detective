@@ -1,81 +1,84 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { detectAndTrackObjects } from '../utils/detection';
-import { getCounts, resetCounts } from '../utils/storage';
-import { sendDetectionData } from '../utils/api';
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import React, { useState, useEffect } from 'react';
 
 const LiveFeed = () => {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
   const [counts, setCounts] = useState({});
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const startDetection = async () => {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      if (navigator.mediaDevices.getUserMedia) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          video.srcObject = stream;
-          video.onloadedmetadata = () => {
-            video.play();
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            detectAndTrackObjects(video, canvas, handleDetectionUpdate);
-          };
-        } catch (err) {
-          console.error("Error accessing the camera: ", err);
-        }
-      }
-    };
+    // Simulating object detection
+    const interval = setInterval(() => {
+      const detectedObject = simulateObjectDetection();
+      updateCounts(detectedObject);
+    }, 1000);
 
-    startDetection();
-    return () => {
-      // Clean up video stream when component unmounts
-      if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-      }
-    };
+    return () => clearInterval(interval);
   }, []);
 
-  const handleDetectionUpdate = async (newCounts) => {
-    setCounts(newCounts);
+  const simulateObjectDetection = () => {
+    const objects = ['car', 'person', 'bicycle', 'dog'];
+    return objects[Math.floor(Math.random() * objects.length)];
+  };
+
+  const updateCounts = async (detectedObject) => {
+    setCounts(prevCounts => {
+      const newCounts = {
+        ...prevCounts,
+        [detectedObject]: (prevCounts[detectedObject] || 0) + 1
+      };
+
+      // Send updated count to backend
+      sendCountToBackend(detectedObject, newCounts[detectedObject]);
+
+      return newCounts;
+    });
+  };
+
+  const sendCountToBackend = async (detectionType, count) => {
     try {
-      await sendDetectionData(newCounts);
+      const response = await fetch('https://backengine-m6trgnlp.fly.dev/api/detection-counts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          detection_type: detectionType,
+          count: count,
+          timestamp: new Date().toISOString(),
+          // user_id is optional, so we're not including it for now
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send count to backend');
+      }
+
+      console.log('Count sent successfully');
     } catch (error) {
-      console.error('Failed to send detection data:', error);
+      console.error('Error sending count to backend:', error);
+      setError('Failed to send count to backend. Please try again later.');
     }
   };
 
-  const handleReset = () => {
-    resetCounts();
+  const resetCounts = () => {
     setCounts({});
+    setError(null);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-3xl font-bold mb-4">Real-time Object Detection and Tracking</h1>
-      <div className="relative mb-4">
-        <video ref={videoRef} className="border rounded" autoPlay playsInline muted />
-        <canvas ref={canvasRef} className="absolute top-0 left-0" />
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Live Object Detection</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <div className="mb-4">
+        {Object.entries(counts).map(([object, count]) => (
+          <p key={object}>{object}: {count}</p>
+        ))}
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Detected Objects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {Object.entries(counts).map(([key, value]) => (
-              <li key={key} className="flex justify-between">
-                <span>{key}:</span>
-                <span>{value}</span>
-              </li>
-            ))}
-          </ul>
-          <Button onClick={handleReset} className="mt-4 w-full">Reset Counts</Button>
-        </CardContent>
-      </Card>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick={resetCounts}
+      >
+        Reset Counts
+      </button>
     </div>
   );
 };
