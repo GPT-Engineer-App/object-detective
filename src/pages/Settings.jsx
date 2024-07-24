@@ -2,65 +2,84 @@ import React, { useState } from 'react';
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
-import { Switch } from "../components/ui/switch"
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { Textarea } from "../components/ui/textarea"
 
 const Settings = () => {
-  const [settings, setSettings] = useState({
-    confidenceThreshold: 0.5,
-    useGPU: true,
-    enableMultiThreading: true,
+  const [endpoints, setEndpoints] = useState({
+    endpoint1: '',
+    endpoint2: '',
+    endpoint3: '',
+  });
+  const [apiResults, setApiResults] = useState({
+    endpoint1: '',
+    endpoint2: '',
+    endpoint3: '',
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setSettings(prev => ({
+  const handleEndpointChange = (e) => {
+    const { name, value } = e.target;
+    setEndpoints(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save the settings to some persistent storage
-    console.log('Saving settings:', settings);
-    // Implement actual saving logic
+  const testApiCall = async (endpoint) => {
+    try {
+      const response = await fetch(endpoints[endpoint], {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setApiResults(prev => ({
+        ...prev,
+        [endpoint]: JSON.stringify(data, null, 2)
+      }));
+    } catch (error) {
+      setApiResults(prev => ({
+        ...prev,
+        [endpoint]: `Error: ${error.message}`
+      }));
+    }
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Settings</h1>
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="confidenceThreshold">Confidence Threshold</Label>
-          <Input
-            id="confidenceThreshold"
-            name="confidenceThreshold"
-            type="number"
-            min="0"
-            max="1"
-            step="0.1"
-            value={settings.confidenceThreshold}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="useGPU"
-            name="useGPU"
-            checked={settings.useGPU}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, useGPU: checked }))}
-          />
-          <Label htmlFor="useGPU">Use GPU Acceleration</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="enableMultiThreading"
-            name="enableMultiThreading"
-            checked={settings.enableMultiThreading}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, enableMultiThreading: checked }))}
-          />
-          <Label htmlFor="enableMultiThreading">Enable Multi-threading</Label>
-        </div>
-        <Button onClick={handleSave}>Save Settings</Button>
+      <h1 className="text-3xl font-bold mb-4">Enginelabs.ai Settings</h1>
+      <div className="space-y-6">
+        {['endpoint1', 'endpoint2', 'endpoint3'].map((endpoint) => (
+          <Card key={endpoint}>
+            <CardHeader>
+              <CardTitle>{`${endpoint.charAt(0).toUpperCase() + endpoint.slice(1)} Configuration`}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Label htmlFor={endpoint}>API Endpoint</Label>
+                <Input
+                  id={endpoint}
+                  name={endpoint}
+                  value={endpoints[endpoint]}
+                  onChange={handleEndpointChange}
+                  placeholder={`Enter ${endpoint} URL`}
+                />
+                <Button onClick={() => testApiCall(endpoint)} className="mt-2">Test API Call</Button>
+                {apiResults[endpoint] && (
+                  <div className="mt-4">
+                    <Label>API Result:</Label>
+                    <Textarea
+                      value={apiResults[endpoint]}
+                      readOnly
+                      className="mt-1 h-32"
+                    />
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
