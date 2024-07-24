@@ -13,7 +13,7 @@ const LiveFeed = () => {
     const startDetection = async () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      if (navigator.mediaDevices.getUserMedia) {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           video.srcObject = stream;
@@ -27,6 +27,8 @@ const LiveFeed = () => {
           console.error("Error accessing the camera: ", err);
           setError("Failed to access the camera. Please check your permissions and try again.");
         }
+      } else {
+        setError("Your browser doesn't support getUserMedia.");
       }
     };
 
