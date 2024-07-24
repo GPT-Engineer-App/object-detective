@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getUserSettings, updateUserSettings } from '../utils/api';
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
@@ -10,6 +11,22 @@ const Settings = () => {
     useGPU: true,
     enableMultiThreading: true,
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const userSettings = await getUserSettings();
+        setSettings(userSettings);
+      } catch (err) {
+        setError('Failed to load settings. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -19,11 +36,17 @@ const Settings = () => {
     }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save the settings to some persistent storage
-    console.log('Saving settings:', settings);
-    // Implement actual saving logic
+  const handleSave = async () => {
+    try {
+      await updateUserSettings(settings);
+      alert('Settings saved successfully!');
+    } catch (err) {
+      setError('Failed to save settings. Please try again.');
+    }
   };
+
+  if (isLoading) return <div>Loading settings...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="container mx-auto p-4">
