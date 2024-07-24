@@ -6,11 +6,9 @@ const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    // Add any other default headers here
   },
 });
 
-// Function to set the authentication token
 export const setAuthToken = (token) => {
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -19,7 +17,6 @@ export const setAuthToken = (token) => {
   }
 };
 
-// Upload image for detection
 export const uploadImage = async (imageFile) => {
   const formData = new FormData();
   formData.append('image', imageFile);
@@ -37,7 +34,6 @@ export const uploadImage = async (imageFile) => {
   }
 };
 
-// Retrieve detection results
 export const getDetectionResults = async (imageId) => {
   try {
     const response = await api.get(`/detection/${imageId}`);
@@ -48,7 +44,6 @@ export const getDetectionResults = async (imageId) => {
   }
 };
 
-// Get user settings
 export const getUserSettings = async () => {
   try {
     const response = await api.get('/settings');
@@ -59,7 +54,6 @@ export const getUserSettings = async () => {
   }
 };
 
-// Update user settings
 export const updateUserSettings = async (settings) => {
   try {
     const response = await api.put('/settings', settings);

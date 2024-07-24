@@ -4,7 +4,7 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Switch } from "../components/ui/switch"
-import { toast } from "../components/ui/use-toast"
+import { useToast } from "../components/ui/use-toast"
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -13,6 +13,7 @@ const Settings = () => {
     enableMultiThreading: true,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -31,7 +32,7 @@ const Settings = () => {
       }
     };
     fetchSettings();
-  }, []);
+  }, [toast]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
