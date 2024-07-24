@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
 const LiveFeed = () => {
-  const [counts, setCounts] = useState({ person: 0, car: 0 });
+  const [counts, setCounts] = useState({});
+  const [lastDetection, setLastDetection] = useState(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
+      // Simulate object detection
+      const detectedObject = Math.random() > 0.5 ? 'person' : 'car';
+      setLastDetection(detectedObject);
+      
       setCounts(prevCounts => ({
-        person: prevCounts.person + Math.floor(Math.random() * 2),
-        car: prevCounts.car + Math.floor(Math.random() * 2)
+        ...prevCounts,
+        [detectedObject]: (prevCounts[detectedObject] || 0) + 1
       }));
     }, 2000);
 
@@ -15,18 +20,21 @@ const LiveFeed = () => {
   }, []);
 
   const handleReset = () => {
-    setCounts({ person: 0, car: 0 });
+    setCounts({});
+    setLastDetection(null);
   };
 
   return (
     <div>
-      <h1>Object Detection Simulation</h1>
+      <h1>Improved Object Detection Simulation</h1>
       <div>
         <h2>Detected Objects</h2>
         <ul>
-          <li>Person: {counts.person}</li>
-          <li>Car: {counts.car}</li>
+          {Object.entries(counts).map(([object, count]) => (
+            <li key={object}>{object}: {count}</li>
+          ))}
         </ul>
+        <p>Last detected: {lastDetection || 'None'}</p>
         <button onClick={handleReset}>Reset Counts</button>
       </div>
     </div>
