@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
 import { getCounts, resetCounts } from '../utils/storage';
 import { uploadImage, getDetectionResults } from '../utils/api';
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const LiveFeed = () => {
   const videoRef = useRef(null);
@@ -79,25 +77,21 @@ const LiveFeed = () => {
         <video ref={videoRef} className="border rounded" autoPlay playsInline muted />
         <canvas ref={canvasRef} className="absolute top-0 left-0" />
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Detected Objects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {Object.entries(counts).map(([key, value]) => (
-              <li key={key} className="flex justify-between">
-                <span>{key}:</span>
-                <span>{value}</span>
-              </li>
-            ))}
-          </ul>
-          <Button onClick={handleCapture} disabled={isProcessing} className="mt-4 w-full">
-            {isProcessing ? 'Processing...' : 'Capture and Process'}
-          </Button>
-          <Button onClick={handleReset} className="mt-2 w-full">Reset Counts</Button>
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-md">
+        <h2 className="text-xl font-bold mb-2">Detected Objects</h2>
+        <ul className="space-y-2">
+          {Object.entries(counts).map(([key, value]) => (
+            <li key={key} className="flex justify-between">
+              <span>{key}:</span>
+              <span>{value}</span>
+            </li>
+          ))}
+        </ul>
+        <button onClick={handleCapture} disabled={isProcessing} className="mt-4 w-full bg-blue-500 text-white p-2 rounded">
+          {isProcessing ? 'Processing...' : 'Capture and Process'}
+        </button>
+        <button onClick={handleReset} className="mt-2 w-full bg-gray-300 p-2 rounded">Reset Counts</button>
+      </div>
     </div>
   );
 };

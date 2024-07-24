@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { getUserSettings, updateUserSettings } from '../utils/api';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -53,8 +49,8 @@ const Settings = () => {
       <h1 className="text-3xl font-bold mb-4">Settings</h1>
       <div className="space-y-4">
         <div>
-          <Label htmlFor="confidenceThreshold">Confidence Threshold</Label>
-          <Input
+          <label htmlFor="confidenceThreshold" className="block mb-1">Confidence Threshold</label>
+          <input
             id="confidenceThreshold"
             name="confidenceThreshold"
             type="number"
@@ -63,27 +59,30 @@ const Settings = () => {
             step="0.1"
             value={settings.confidenceThreshold}
             onChange={handleChange}
+            className="w-full p-2 border rounded"
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Switch
+          <input
+            type="checkbox"
             id="useGPU"
             name="useGPU"
             checked={settings.useGPU}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, useGPU: checked }))}
+            onChange={handleChange}
           />
-          <Label htmlFor="useGPU">Use GPU Acceleration</Label>
+          <label htmlFor="useGPU">Use GPU Acceleration</label>
         </div>
         <div className="flex items-center space-x-2">
-          <Switch
+          <input
+            type="checkbox"
             id="enableMultiThreading"
             name="enableMultiThreading"
             checked={settings.enableMultiThreading}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, enableMultiThreading: checked }))}
+            onChange={handleChange}
           />
-          <Label htmlFor="enableMultiThreading">Enable Multi-threading</Label>
+          <label htmlFor="enableMultiThreading">Enable Multi-threading</label>
         </div>
-        <Button onClick={handleSave}>Save Settings</Button>
+        <button onClick={handleSave} className="bg-blue-500 text-white p-2 rounded">Save Settings</button>
       </div>
     </div>
   );
