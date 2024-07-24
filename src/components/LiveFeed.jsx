@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const LiveFeed = () => {
   const [counts, setCounts] = useState({});
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const detectedObject = Math.random() > 0.5 ? 'person' : 'car';
-      setCounts(prevCounts => ({
-        ...prevCounts,
-        [detectedObject]: (prevCounts[detectedObject] || 0) + 1
-      }));
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const simulateDetection = () => {
+    const detectedObject = Math.random() > 0.5 ? 'person' : 'car';
+    setCounts(prevCounts => ({
+      ...prevCounts,
+      [detectedObject]: (prevCounts[detectedObject] || 0) + 1
+    }));
+  };
 
   const handleReset = () => {
     setCounts({});
@@ -29,6 +25,7 @@ const LiveFeed = () => {
             <li key={object}>{object}: {count}</li>
           ))}
         </ul>
+        <button onClick={simulateDetection}>Simulate Detection</button>
         <button onClick={handleReset}>Reset Counts</button>
       </div>
     </div>
