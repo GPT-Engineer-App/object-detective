@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
-import { getCounts, resetCounts } from '../utils/storage';
-import { sendDetectionData } from '../utils/api';
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 
@@ -32,24 +30,23 @@ const LiveFeed = () => {
 
     startDetection();
     return () => {
-      // Clean up video stream when component unmounts
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
 
-  const handleDetectionUpdate = async (newCounts) => {
-    setCounts(newCounts);
-    try {
-      await sendDetectionData(newCounts);
-    } catch (error) {
-      console.error('Failed to send detection data:', error);
-    }
+  const handleDetectionUpdate = (newCounts) => {
+    setCounts(prevCounts => {
+      const updatedCounts = { ...prevCounts };
+      Object.entries(newCounts).forEach(([key, value]) => {
+        updatedCounts[key] = (updatedCounts[key] || 0) + value;
+      });
+      return updatedCounts;
+    });
   };
 
   const handleReset = () => {
-    resetCounts();
     setCounts({});
   };
 
