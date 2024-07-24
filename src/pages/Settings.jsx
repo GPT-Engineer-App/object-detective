@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const Settings = () => {
   const [endpoints, setEndpoints] = useState({
@@ -35,20 +37,20 @@ const Settings = () => {
         <div key={endpointName} className="mb-4">
           <label className="block mb-2">
             {endpointName}:
-            <input
+            <Input
               type="text"
               name={endpointName}
               value={endpoints[endpointName]}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded"
+              className="w-full"
             />
           </label>
-          <button
+          <Button
             onClick={() => testEndpoint(endpointName)}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="mt-2"
           >
             Test {endpointName}
-          </button>
+          </Button>
           {results[endpointName] && (
             <pre className="mt-2 p-2 bg-gray-100 rounded">
               {results[endpointName]}
