@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import * as cocossd from '@tensorflow-models/coco-ssd';
 import { updateCounts } from './storage';
+import { storeDetectionCounts } from './api';
 
 let model;
 
@@ -49,6 +50,13 @@ const detectAndTrackObjects = async (video, canvas, setCounts) => {
     // Update object counts
     objectCounts = { ...objectCounts, ...newCounts };
     updateCounts(objectCounts, setCounts);
+
+    // Store detection counts in the backend
+    try {
+      await storeDetectionCounts(objectCounts);
+    } catch (error) {
+      console.error('Failed to store detection counts:', error);
+    }
 
     requestAnimationFrame(processFrame);
   };

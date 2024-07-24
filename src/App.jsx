@@ -3,6 +3,8 @@ import Index from "./pages/Index.jsx";
 import LiveFeed from "./components/LiveFeed.jsx";
 import History from "./pages/History.jsx";
 import Settings from "./pages/Settings.jsx";
+import Login from "./pages/Login.jsx";
+import Signup from "./pages/Signup.jsx";
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
         <Route path="/live-feed" element={<LiveFeed />} />
         <Route path="/history" element={<History />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );
