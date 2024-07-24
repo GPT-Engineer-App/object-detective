@@ -30,17 +30,6 @@ const Index = () => {
             </Link>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Settings</CardTitle>
-            <CardDescription>Configure app preferences</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link to="/settings">
-              <Button className="w-full" variant="outline">Open Settings</Button>
-            </Link>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
