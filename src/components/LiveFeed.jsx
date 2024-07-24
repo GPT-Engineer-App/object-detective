@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
 import { getCounts, resetCounts } from '../utils/storage';
-import { sendDetectionData } from '../utils/api';
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 
@@ -22,7 +21,7 @@ const LiveFeed = () => {
             video.play();
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            detectAndTrackObjects(video, canvas, handleDetectionUpdate);
+            detectAndTrackObjects(video, canvas, setCounts);
           };
         } catch (err) {
           console.error("Error accessing the camera: ", err);
@@ -38,15 +37,6 @@ const LiveFeed = () => {
       }
     };
   }, []);
-
-  const handleDetectionUpdate = async (newCounts) => {
-    setCounts(newCounts);
-    try {
-      await sendDetectionData(newCounts);
-    } catch (error) {
-      console.error('Failed to send detection data:', error);
-    }
-  };
 
   const handleReset = () => {
     resetCounts();
