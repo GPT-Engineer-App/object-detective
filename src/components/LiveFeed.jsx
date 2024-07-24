@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { detectAndTrackObjects } from '../utils/detection';
-import { getCounts, resetCounts } from '../utils/storage';
 
 const LiveFeed = () => {
   const videoRef = useRef(null);
@@ -12,7 +11,7 @@ const LiveFeed = () => {
     const startDetection = async () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      if (navigator.mediaDevices.getUserMedia) {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           video.srcObject = stream;
@@ -37,38 +36,32 @@ const LiveFeed = () => {
     };
   }, []);
 
-  const handleDetectionUpdate = async (newCounts) => {
+  const handleDetectionUpdate = (newCounts) => {
     setCounts(newCounts);
   };
 
-  const handleReset = async () => {
-    try {
-      await resetCounts();
-      setCounts({});
-    } catch (error) {
-      setError("Failed to reset counts. Please try again.");
-      console.error('Failed to reset counts:', error);
-    }
+  const handleReset = () => {
+    setCounts({});
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-3xl font-bold mb-4">Real-time Object Detection and Tracking</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
+      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Real-time Object Detection and Tracking</h1>
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-          <strong className="font-bold">Error: </strong>
-          <span className="block sm:inline">{error}</span>
+        <div style={{ backgroundColor: '#ffcccc', padding: '10px', marginBottom: '20px', borderRadius: '5px' }}>
+          <strong>Error: </strong>
+          <span>{error}</span>
         </div>
       )}
-      <div className="relative mb-4">
-        <video ref={videoRef} className="border rounded" autoPlay playsInline muted />
-        <canvas ref={canvasRef} className="absolute top-0 left-0" />
+      <div style={{ position: 'relative', marginBottom: '20px' }}>
+        <video ref={videoRef} style={{ border: '1px solid #ccc', borderRadius: '5px' }} autoPlay playsInline muted />
+        <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0 }} />
       </div>
-      <div className="w-full max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h2 className="text-xl font-bold mb-2">Detected Objects</h2>
-        <ul className="space-y-2">
+      <div style={{ width: '100%', maxWidth: '400px', backgroundColor: '#f0f0f0', padding: '20px', borderRadius: '5px' }}>
+        <h2 style={{ fontSize: '20px', marginBottom: '10px' }}>Detected Objects</h2>
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
           {Object.entries(counts).map(([key, value]) => (
-            <li key={key} className="flex justify-between">
+            <li key={key} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
               <span>{key}:</span>
               <span>{value}</span>
             </li>
@@ -76,7 +69,20 @@ const LiveFeed = () => {
         </ul>
         <button
           onClick={handleReset}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 w-full"
+          style={{
+            backgroundColor: '#4CAF50',
+            border: 'none',
+            color: 'white',
+            padding: '10px 20px',
+            textAlign: 'center',
+            textDecoration: 'none',
+            display: 'inline-block',
+            fontSize: '16px',
+            margin: '4px 2px',
+            cursor: 'pointer',
+            borderRadius: '5px',
+            width: '100%'
+          }}
         >
           Reset Counts
         </button>
