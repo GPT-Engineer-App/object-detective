@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:dev": "vite build --mode development",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -20,7 +21,7 @@
     "react-router-dom": "^6.20.1",
     "sqlite3": "^5.1.7",
     "yolov5": "^1.0.11",
-    "yolov5js": "^1.0.0"
+    "yolov5js": "latest"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",
