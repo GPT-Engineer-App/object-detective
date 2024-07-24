@@ -1,31 +1,15 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Layout = ({ children }) => {
-  const location = useLocation();
-
-  const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/live-feed', label: 'Live Feed' },
-    { path: '/history', label: 'History' },
-    { path: '/settings', label: 'Settings' },
-  ];
-
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-gray-100 py-4">
         <nav className="container mx-auto flex justify-center space-x-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`px-4 py-2 ${
-                location.pathname === item.path ? 'font-bold' : ''
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          <Link to="/" className="px-4 py-2">Home</Link>
+          <Link to="/live-feed" className="px-4 py-2">Live Feed</Link>
+          <Link to="/history" className="px-4 py-2">History</Link>
+          <Link to="/settings" className="px-4 py-2">Settings</Link>
         </nav>
       </header>
       <main className="flex-grow container mx-auto px-4 py-8">
