@@ -5,14 +5,25 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 
 const History = () => {
   const [history, setHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const data = await getCountHistory();
-      setHistory(data);
+      try {
+        const data = await getCountHistory();
+        setHistory(data);
+      } catch (error) {
+        console.error('Error fetching history:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchHistory();
   }, []);
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">

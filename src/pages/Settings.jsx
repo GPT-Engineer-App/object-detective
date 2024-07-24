@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getUserSettings, updateUserSettings } from '../utils/api';
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Switch } from "../components/ui/switch"
+import { toast } from "../components/ui/use-toast"
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -10,6 +12,26 @@ const Settings = () => {
     useGPU: true,
     enableMultiThreading: true,
   });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const userSettings = await getUserSettings();
+        setSettings(userSettings);
+      } catch (error) {
+        console.error('Error fetching user settings:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load settings. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -19,11 +41,26 @@ const Settings = () => {
     }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save the settings to some persistent storage
-    console.log('Saving settings:', settings);
-    // Implement actual saving logic
+  const handleSave = async () => {
+    try {
+      await updateUserSettings(settings);
+      toast({
+        title: "Success",
+        description: "Settings saved successfully.",
+      });
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">

@@ -16,6 +16,7 @@
     "@radix-ui/react-switch": "^1.0.3",
     "@tensorflow-models/coco-ssd": "^2.2.3",
     "@tensorflow/tfjs": "^4.20.0",
+    "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dexie": "^4.0.8",
