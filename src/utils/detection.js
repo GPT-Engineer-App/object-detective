@@ -12,7 +12,7 @@ const loadModel = async () => {
   return model;
 };
 
-const detectAndTrackObjects = async (video, canvas, setCounts) => {
+export const detectAndTrackObjects = async (video, canvas, setCounts) => {
   await tf.setBackend('webgl');
   const cocoModel = await loadModel();
 
@@ -55,5 +55,3 @@ const detectAndTrackObjects = async (video, canvas, setCounts) => {
 
   processFrame();
 };
-
-export { detectAndTrackObjects };

@@ -5,7 +5,7 @@ db.version(1).stores({
   counts: '++id, type, count, timestamp'
 });
 
-const updateCounts = async (newCounts, setCounts) => {
+export const updateCounts = async (newCounts, setCounts) => {
   const timestamp = new Date().toISOString();
   
   await db.transaction('rw', db.counts, async () => {
@@ -17,7 +17,7 @@ const updateCounts = async (newCounts, setCounts) => {
   setCounts(newCounts);
 };
 
-const getCounts = async () => {
+export const getCounts = async () => {
   const counts = await db.counts.toArray();
   return counts.reduce((acc, curr) => {
     if (!acc[curr.type]) {
@@ -28,15 +28,15 @@ const getCounts = async () => {
   }, {});
 };
 
-const resetCounts = async () => {
+export const resetCounts = async () => {
   await db.counts.clear();
 };
 
-const getCountHistory = async () => {
+export const getCountHistory = async () => {
   return await db.counts.toArray();
 };
 
-const exportCountsToCSV = async () => {
+export const exportCountsToCSV = async () => {
   const counts = await getCountHistory();
   const csvContent = [
     ['Type', 'Count', 'Timestamp'],
@@ -55,5 +55,3 @@ const exportCountsToCSV = async () => {
     document.body.removeChild(link);
   }
 };
-
-export { updateCounts, getCounts, resetCounts, getCountHistory, exportCountsToCSV };
