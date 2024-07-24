@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Switch } from "../components/ui/switch"
+import { fetchSettings, updateSettings } from '../utils/api';
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -10,6 +11,24 @@ const Settings = () => {
     useGPU: true,
     enableMultiThreading: true,
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedSettings = await fetchSettings();
+        setSettings(fetchedSettings);
+      } catch (err) {
+        setError('Failed to load settings. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -19,11 +38,25 @@ const Settings = () => {
     }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save the settings to some persistent storage
-    console.log('Saving settings:', settings);
-    // Implement actual saving logic
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      await updateSettings(settings);
+      setError(null);
+    } catch (err) {
+      setError('Failed to save settings. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return <div>Loading settings...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -60,7 +93,9 @@ const Settings = () => {
           />
           <Label htmlFor="enableMultiThreading">Enable Multi-threading</Label>
         </div>
-        <Button onClick={handleSave}>Save Settings</Button>
+        <Button onClick={handleSave} disabled={isLoading}>
+          {isLoading ? 'Saving...' : 'Save Settings'}
+        </Button>
       </div>
     </div>
   );
