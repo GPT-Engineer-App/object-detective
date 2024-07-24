@@ -1,67 +1,61 @@
 import React, { useState } from 'react';
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Switch } from "../components/ui/switch"
 
 const Settings = () => {
-  const [settings, setSettings] = useState({
-    confidenceThreshold: 0.5,
-    useGPU: true,
-    enableMultiThreading: true,
+  const [endpoints, setEndpoints] = useState({
+    endpoint1: '',
+    endpoint2: '',
+    endpoint3: ''
+  });
+  const [results, setResults] = useState({
+    endpoint1: '',
+    endpoint2: '',
+    endpoint3: ''
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setSettings(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEndpoints(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save the settings to some persistent storage
-    console.log('Saving settings:', settings);
-    // Implement actual saving logic
+  const testEndpoint = async (endpointName) => {
+    try {
+      const response = await fetch(endpoints[endpointName]);
+      const data = await response.json();
+      setResults(prev => ({ ...prev, [endpointName]: JSON.stringify(data, null, 2) }));
+    } catch (error) {
+      setResults(prev => ({ ...prev, [endpointName]: `Error: ${error.message}` }));
+    }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Settings</h1>
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="confidenceThreshold">Confidence Threshold</Label>
-          <Input
-            id="confidenceThreshold"
-            name="confidenceThreshold"
-            type="number"
-            min="0"
-            max="1"
-            step="0.1"
-            value={settings.confidenceThreshold}
-            onChange={handleChange}
-          />
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Enginelabs.ai Settings</h1>
+      
+      {Object.keys(endpoints).map((endpointName) => (
+        <div key={endpointName} className="mb-4">
+          <label className="block mb-2">
+            {endpointName}:
+            <input
+              type="text"
+              name={endpointName}
+              value={endpoints[endpointName]}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+            />
+          </label>
+          <button
+            onClick={() => testEndpoint(endpointName)}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Test {endpointName}
+          </button>
+          {results[endpointName] && (
+            <pre className="mt-2 p-2 bg-gray-100 rounded">
+              {results[endpointName]}
+            </pre>
+          )}
         </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="useGPU"
-            name="useGPU"
-            checked={settings.useGPU}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, useGPU: checked }))}
-          />
-          <Label htmlFor="useGPU">Use GPU Acceleration</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="enableMultiThreading"
-            name="enableMultiThreading"
-            checked={settings.enableMultiThreading}
-            onCheckedChange={(checked) => setSettings(prev => ({ ...prev, enableMultiThreading: checked }))}
-          />
-          <Label htmlFor="enableMultiThreading">Enable Multi-threading</Label>
-        </div>
-        <Button onClick={handleSave}>Save Settings</Button>
-      </div>
+      ))}
     </div>
   );
 };
